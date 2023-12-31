@@ -8,9 +8,9 @@
     "start": "node dist/index.js",
     "dev": "nodemon src/index.ts",
     "prepare": "husky install",
-    "lint": "eslint .",
-    "lint:fix": "eslint --fix .",
-    "prettier": "prettier --write ."
+    "lint": "eslint src/**",
+    "lint:fix": "eslint --fix src/**",
+    "prettier": "prettier --write src/**"
   },
   "keywords": [
     "nodejs",
