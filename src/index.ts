@@ -1,3 +1,3 @@
-import { startWebScraping } from "./scraper"
+import {startWebScraping} from "./scraper";
 
 startWebScraping();
