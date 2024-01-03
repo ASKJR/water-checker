@@ -31,12 +31,12 @@ export const startWebScraping = async (
         const startDate = $(div).find("span.date-display-start").text();
         const endDate = $(div).find("span.date-display-end").text();
         const msg = $(div).find("p").text();
-        message = `#${
+        message += `#${
           index + 1
-        } - ${cityName} - ${startDate} a ${endDate} - ${msg}`;
-        console.log(message);
-        sendEmail(message);
+        } - ${cityName} - ${startDate} a ${endDate} - ${msg}\n`;
       });
+      console.log(message);
+      sendEmail(message);
     }
   } catch (error) {
     console.error(error);
