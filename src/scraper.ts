@@ -1,6 +1,7 @@
 import cheerio from "cheerio";
 import axios, {type AxiosResponse} from "axios";
 import {httpsAgent} from "./config/https";
+import {sendEmail} from "./notification";
 
 /**
  * Check if a city in the state of Parana (Brazil) will be temporarily
@@ -18,21 +19,23 @@ export const startWebScraping = async (
     });
     const $ = cheerio.load(response.data);
     const divInfoUtil = $("div.info_util");
-
+    let message = "";
     if (divInfoUtil.length === 0) {
-      console.log(
+      message =
         `A pesquisa não encontrou nenhuma parada ` +
-          `de abastecimento de àgua programada para ${city}.`,
-      );
+        `de abastecimento de àgua programada para ${city}.`;
+      console.log(message);
     } else {
       divInfoUtil.each((index, div) => {
         const cityName = $(div).find("div.cidade").text();
         const startDate = $(div).find("span.date-display-start").text();
         const endDate = $(div).find("span.date-display-end").text();
         const msg = $(div).find("p").text();
-        console.log(
-          `#${index + 1} - ${cityName} - ${startDate} a ${endDate} - ${msg}`,
-        );
+        message = `#${
+          index + 1
+        } - ${cityName} - ${startDate} a ${endDate} - ${msg}`;
+        console.log(message);
+        sendEmail(message);
       });
     }
   } catch (error) {
