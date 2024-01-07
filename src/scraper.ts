@@ -15,28 +15,34 @@ export const startWebScraping = async (
   const baseUrl = `https://site.sanepar.com.br/paradas-no-abastecimento?name=${city}`;
   try {
     const response: AxiosResponse<string> = await axios.get<string>(baseUrl, {
+      headers: {},
       httpsAgent,
     });
     const $ = cheerio.load(response.data);
-    const divInfoUtil = $("div.info_util");
-    let message = "";
-    if (divInfoUtil.length === 0) {
-      message =
+    const divInfoUtilUl = $("div.info_util").find("ul");
+    let htmlMessage = "";
+    if (divInfoUtilUl.length === 0) {
+      htmlMessage =
         `A pesquisa não encontrou nenhuma parada ` +
         `de abastecimento de àgua programada para ${city}.`;
-      console.log(message);
+      console.log(htmlMessage);
     } else {
-      divInfoUtil.each((index, div) => {
+      divInfoUtilUl.find("li").each((index, div) => {
         const cityName = $(div).find("div.cidade").text();
-        const startDate = $(div).find("span.date-display-start").text();
-        const endDate = $(div).find("span.date-display-end").text();
+        const singleDate = $(div).find("span.date-display-single");
+        let date = singleDate.text();
+        if (singleDate.length === 0) {
+          const startDate = $(div).find("span.date-display-start").text();
+          const endDate = $(div).find("span.date-display-end").text();
+          date = `${startDate} a ${endDate}`;
+        }
         const msg = $(div).find("p").text();
-        message += `#${
+        htmlMessage += `#${
           index + 1
-        } - ${cityName} - ${startDate} a ${endDate} - ${msg}\n`;
+        } - ${cityName} - ${date} - ${msg}.<br />\n`;
       });
-      console.log(message);
-      sendEmail(message);
+      console.log(htmlMessage);
+      sendEmail(htmlMessage);
     }
   } catch (error) {
     console.error(error);
